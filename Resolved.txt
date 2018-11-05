@@ -1,4 +1,8 @@
-mx.rutgers.com 192.64.4.5 A
-kill.cs.rutgers.edu 182.48.3.2 A
-www.ibm.edu - Error:HOST NOT FOUND
-www.google.com 8.6.4.2 A
+Error
+Error
+Error
+rutgers.edu 86.95.3.172 A
+www.princeton.edu 159.112.40.146 A
+google.com 19.45.31.54 A
+www.test.org 104.209.216.174 A
+happy.com 109.78.231.33 A

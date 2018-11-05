@@ -38,7 +38,7 @@ rs.connect(server_bindingRS)
 print ("[C]:  Connected to RS Server")
 
 # Import from file
-inPath = 'PROJI-HNS.txt'
+inPath = 'PROJ2-HNS.txt'
 numLinesInFile = fileLineCount(inPath)
 inFile = open(inPath, 'r')
 print("Num Of Lines in HNS: " + str(numLinesInFile))
@@ -70,44 +70,46 @@ while True:
 	
 	#split it in 3 and check 3rd portion.
 	
-	splitList = msg.split()
-	if splitList[2] == 'NS':
-		if tsConnected == False:
-			tsConnected= True
-			print("[C]: MUST CONNECT TO TS NOW.")
-			TsPort = 60000
-			tsHostName = splitList[0]
-			ts_ip = mysoc.gethostbyname(tsHostName)
-			print("GREP IP IS: ", ts_ip)
-			server_bindingTS = (ts_ip, TsPort)
-			ts.connect(server_bindingTS)
-			print("[C]: Connected to TS Server")
-	
-		#send the hostname to ts
-		print("[C > TS] sending: "  + inLine)
-		ts.send(inLine.encode('utf-8'))
-		data_from_ts = ts.recv(1024)
-		print("[C < TS] received:  ", data_from_ts.decode('utf-8'))
-		msgTS= data_from_ts.decode('utf-8')
-		splitListTS = msgTS.split()
-		
-		#write to file
-		strToFileTS = msgTS + "\n"
-		fileOut.write(strToFileTS)
-	else:
+	# splitList = msg.split()
+	# if splitList[2] == 'NS':
+	# 	if tsConnected == False:
+	# 		tsConnected= True
+	# 		print("[C]: MUST CONNECT TO TS NOW.")
+	# 		TsPort = 60000
+	# 		tsHostName = splitList[0]
+	# 		ts_ip = mysoc.gethostbyname(tsHostName)
+	# 		print("GREP IP IS: ", ts_ip)
+	# 		#FIXME for testing purposes we run on same machine, uncomment for diff machine
+	# 		#server_bindingTS = (ts_ip, TsPort)
+	# 		server_bindingTS = (clientIP, TsPort)
+	# 		ts.connect(server_bindingTS)
+	# 		print("[C]: Connected to TS Server")
+	#
+	# 	#send the hostname to ts
+	# 	print("[C > TS] sending: "  + inLine)
+	# 	ts.send(inLine.encode('utf-8'))
+	# 	data_from_ts = ts.recv(1024)
+	# 	print("[C < TS] received:  ", data_from_ts.decode('utf-8'))
+	# 	msgTS= data_from_ts.decode('utf-8')
+	# 	splitListTS = msgTS.split()
+	#
+	# 	#write to file
+	# 	strToFileTS = msgTS + "\n"
+	# 	fileOut.write(strToFileTS)
+	# else:
 		# output the string to result file
-		strToFile = msg + "\n"
-		fileOut.write(strToFile)
-		print("[C]: Line is VALID: ", msg)
+	strToFile = msg + "\n"
+	fileOut.write(strToFile)
+	print("[C]: Line is VALID: ", msg)
 	
 	print("")
 
 
 
-ts.send("Kill TS".encode('utf-8'))
+#ts.send("Kill TS".encode('utf-8'))
 
 rs.close()
-ts.close()
+#ts.close()
 
 
 
