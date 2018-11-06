@@ -5,7 +5,7 @@ import socket
 def fileLineCount(path):
 	with open(path) as fileIn:
 		for index, element in enumerate(fileIn):
-			pass
+			passr
 	
 	val = index + 1
 	return val
