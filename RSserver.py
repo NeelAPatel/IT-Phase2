@@ -1,5 +1,5 @@
 import socket as mysoc
-
+import sys
 
 def fileLineCount(path):
 	with open(path) as fileIn:
@@ -10,33 +10,39 @@ def fileLineCount(path):
 	return val
 
 
-#socket with client
+print ('Number of arguments:', len(sys.argv), 'arguments.')
+print ('Argument List:', str(sys.argv))
+
+# Socket with Client
 try:
 	ss = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
 	print("[RS]: Server socket created")
 except mysoc.error as err:
 	print('{} \n'.format("socket open error ", err))
+
+#Socket bound to pre-determined value for client
 server_binding = ('', 50020)
 ss.bind(server_binding)
 ss.listen(1)
-host = mysoc.gethostname()
-print("[RS]: Server host name is: ", host)
-localhost_ip = (mysoc.gethostbyname(host))
-print("[RS]: Server IP address is  ", localhost_ip)
+rsHost = mysoc.gethostname()
+print("[RS]: RSServer host name is: ", rsHost)
+localhost_ip = (mysoc.gethostbyname(rsHost))
+print("[RS]: RSServer IP address is  ", localhost_ip)
 csockid, addr = ss.accept()
 print("[RS]: Got a connection request from a client to RSSERVER", addr)
+
 
 # com Socket
 try:
 	com = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
-	print("[C]: Socket for RS created")
+	print("[RS]: Socket for TS_COM created")
 except mysoc.error as err:
-	print('{} \n'.format("socket open error ", err))
+	print('{} \n'.format("socket open error (TS_COM)", err))
 
 # edu SOCKET
 try:
 	edu = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
-	print("[C]: Socket for TS created")
+	print("[RS]: Socket for TS_EDU created")
 except mysoc.error as err:
 	print('{} \n'.format("TS socket open error ", err))
 
@@ -44,15 +50,27 @@ except mysoc.error as err:
 
 #important info
 #FIXME will need to change when testing on different machine
-COMHostName = mysoc.gethostname() #65500
-EDUHostName = mysoc.gethostname() #55000
+
+
+if (len(sys.argv) == 4):
+	TS_COM_Host = sys.argv[1]
+	TS_EDU_Host = sys.argv[2]
+	DNS_RS_TXT = sys.argv[3]
+else:
+	TS_COM_Host = mysoc.gethostname()
+	TS_EDU_Host = mysoc.gethostname()
+	DNS_RS_TXT = 'PROJ2-DNSRS.txt'
+
+
+COMHostName = TS_COM_Host #65500
+EDUHostName = TS_EDU_Host #55000
 COMHostConnected = False
 EDUHostConnected = False
 
 
 # RS TABLE SET UP
 # IMPORT FROM TS FILE HERE
-inPath = 'PROJ2-DNSRS.txt'
+inPath = DNS_RS_TXT
 numLinesInFile = fileLineCount(inPath)
 inFile = open(inPath, 'r')
 print("Num Of Lines: " + str(numLinesInFile))
@@ -140,7 +158,7 @@ while 1:
 			if not EDUHostConnected:
 				EDUHostConnected = True
 				EDUPort = 55000
-				edu_ip = mysoc.gethostbyname(COMHostName)
+				edu_ip = mysoc.gethostbyname(EDUHostName)
 				# FIXME will change here for the ports on diff machines
 				server_bindingEDU = (edu_ip, EDUPort)
 				edu.connect(server_bindingEDU)
@@ -163,7 +181,8 @@ while 1:
 	
 	print("")
 	
-com.send("Kill TS".encode('utf-8'))
+com.send("Kill COM".encode('utf-8'))
+edu.send("Kill EDU".encode('utf-8'))
 
 # Close the server socket
 ss.close()

@@ -1,5 +1,6 @@
 import socket as mysoc
 
+import sys
 
 def fileLineCount(path):
 	with open(path) as fileIn:
@@ -10,35 +11,51 @@ def fileLineCount(path):
 	return val
 
 
-# FIRST Socket
+print ('Number of arguments:', len(sys.argv), 'arguments.')
+print ('Argument List:', str(sys.argv))
+
+# FIRST Socket | to RS server
 try:
 	rs = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
 	print("[C]: Socket for RS created")
 except mysoc.error as err:
 	print('{} \n'.format("socket open error ", err))
 	
-# SECOND SOCKET
-try:
-	ts = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
-	print("[C]: Socket for TS created")
-except mysoc.error as err:
-	print('{} \n'.format("TS socket open error ", err))
+# # SECOND SOCKET
+# try:
+# 	ts = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
+# 	print("[C]: Socket for TS created")
+# except mysoc.error as err:
+# 	print('{} \n'.format("TS socket open error ", err))
 
+if (len(sys.argv) == 3):
+	RS_HOST = sys.argv[1]
+	DNS_HNS_TXT = sys.argv[2]
+else:
+	RS_HOST = mysoc.gethostname()
+	DNS_HNS_TXT = 'PROJ2-HNS.txt'
+
+#Port for RS
 RsPort = 50020
+
+# Client Host/IP setup
 clientHost = mysoc.gethostname()
 print("[C]: Client name is: " , clientHost)
-
 clientIP = mysoc.gethostbyname(mysoc.gethostname())
 print("[C]: Client IP is: " , clientIP)
 
-
-# connect to RS_SERVER first
-server_bindingRS = (clientIP, RsPort)
-rs.connect(server_bindingRS)
+# connect to RS_SERVER
+rs_ip = mysoc.gethostbyname(RS_HOST)
+print(rs_ip)
+server_bindingRS = (rs_ip, RsPort)
+rs.connect(server_bindingRS) # RS will be waiting for connection
 print ("[C]:  Connected to RS Server")
 
+# Connection established
+
+
 # Import from file
-inPath = 'PROJ2-HNS.txt'
+inPath = DNS_HNS_TXT
 numLinesInFile = fileLineCount(inPath)
 inFile = open(inPath, 'r')
 print("Num Of Lines in HNS: " + str(numLinesInFile))

@@ -1,20 +1,21 @@
 import socket as mysoc
-import socket
+import sys
 
 
 def fileLineCount(path):
 	with open(path) as fileIn:
 		for index, element in enumerate(fileIn):
-			passr
-	
+			pass
 	val = index + 1
 	return val
 
-
-# second Socket
+# Check if arguments show up correctly
+print ('Number of arguments:', len(sys.argv), 'arguments.')
+print ('Argument List:', str(sys.argv))
+#
 try:
 	ts = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
-	print("[TS]: Com Server socket created")
+	print("[EDU]: EDU Server socket created")
 except mysoc.error as err:
 	print('{} \n'.format("socket open error ", err))
 
@@ -24,14 +25,20 @@ ts.listen(1)
 
 # FIXME must be changed later to do on different machine
 host = mysoc.gethostname()
-print("[TS]: COM Server host name is: ", host)
+print("[EDU]: EDU Server host name is: ", host)
 localhost_ip = (mysoc.gethostbyname(host))
-print("[TS]: COM Server IP address is  ", localhost_ip)
+print("[EDU]: EDU Server IP address is  ", localhost_ip)
 csockid, addr = ts.accept()
-print("[TS]: Got a connection request from to this server: ", addr)
+print("[EDU]: Got a connection request from to this server: ", addr)
+
+
+if (len(sys.argv) == 2):
+	DNS_EDU_TXT = sys.argv[1]
+else:
+	DNS_EDU_TXT = 'PROJ2-DNSEDU.txt'
 
 # IMPORT FROM TS FILE HERE
-inPath = 'PROJ2-DNSEDU.txt'
+inPath = DNS_EDU_TXT
 numLinesInFile = fileLineCount(inPath)
 inFile = open(inPath, 'r')
 print("Num Of Lines: " + str(numLinesInFile))
@@ -55,11 +62,11 @@ while 1:
 	data_from_server = csockid.recv(100)
 	
 	if data_from_server:
-		print("[TS]: Data recieved")
+		print("[EDU]: Data recieved")
 		findHost = data_from_server.decode('utf-8')
-		print("[TS < C] Data decoded from client: [", findHost + "]")
+		print("[EDU < RS] Data decoded from client: [", findHost + "]")
 		
-		if (findHost == "Kill TS"):
+		if (findHost == "Kill EDU"):
 			break
 		
 		foundHost = 0
@@ -83,7 +90,7 @@ while 1:
 
 # Close the server socket
 
-print("[TS] Client told me to close. Goodbye!")
+print("[EDU] Client told me to close. Goodbye!")
 ts.close()
 exit()
 

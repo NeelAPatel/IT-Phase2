@@ -1,5 +1,5 @@
 import socket as mysoc
-import socket
+import sys
 
 
 def fileLineCount(path):
@@ -10,28 +10,43 @@ def fileLineCount(path):
 	val = index + 1
 	return val
 
+# Check if arguments show up correctly
+print ('Number of arguments:', len(sys.argv), 'arguments.')
+print ('Argument List:', str(sys.argv))
 
-# second Socket
+# Socket with Client
 try:
 	ts = mysoc.socket(mysoc.AF_INET, mysoc.SOCK_STREAM)
-	print("[TS]: Com Server socket created")
+	print("[COM]: COM Server socket created")
 except mysoc.error as err:
-	print('{} \n'.format("socket open error ", err))
+	print('{} \n'.format("COM socket open error ", err))
 
 server_binding = ('', 65500)
 ts.bind(server_binding)
 ts.listen(1)
 
+
+
+
+
 #FIXME must be changed later to do on different machine
 host = mysoc.gethostname()
-print("[TS]: COM Server host name is: ", host)
+print("[COM]: COM Server host name is: ", host)
 localhost_ip = (mysoc.gethostbyname(host))
-print("[TS]: COM Server IP address is  ", localhost_ip)
+print("[COM]: COM Server IP address is  ", localhost_ip)
 csockid, addr = ts.accept()
-print("[TS]: Got a connection request from to this server: ", addr)
+print("[COM]: Got a connection request from to this server: ", addr)
+
+
+if (len(sys.argv) == 2):
+	DNS_COM_TXT = sys.argv[1]
+else:
+	DNS_COM_TXT = 'PROJ2-DNSCOM.txt'
+	
+
 
 # IMPORT FROM TS FILE HERE
-inPath = 'PROJ2-DNSCOM.txt'
+inPath = DNS_COM_TXT
 numLinesInFile = fileLineCount(inPath)
 inFile = open(inPath, 'r')
 print("Num Of Lines: " + str(numLinesInFile))
@@ -55,11 +70,11 @@ while 1:
 	data_from_server = csockid.recv(100)
 	
 	if data_from_server:
-		print("[TS]: Data recieved")
+		print("[COM]: Data recieved")
 		findHost = data_from_server.decode('utf-8')
-		print("[TS < C] Data decoded from client: [", findHost + "]")
+		print("[COM < RS] Data decoded from RS: [", findHost + "]")
 		
-		if (findHost == "Kill TS"):
+		if (findHost == "Kill COM"):
 			break
 		
 		foundHost = 0
@@ -70,7 +85,7 @@ while 1:
 				print("FOUND HOST NAME")
 				foundHost = 1
 				str = RSarr[i][0] + " " + RSarr[i][1] + " " + RSarr[i][2]
-				print("Going to send to client" + str)
+				print("Going to send to RS" + str)
 				break
 		
 		# send the result back
@@ -78,12 +93,12 @@ while 1:
 			errorMessage = "Error"
 			csockid.send(errorMessage.encode('utf-8'))
 		else:
-			print("Sending host name details now ts")
+			print("Sending host name details now")
 			csockid.send(str.encode('utf-8'))
 
 # Close the server socket
 
-print("[TS] Client told me to close. Goodbye!")
+print("[COM] Client told me to close. Goodbye!")
 ts.close()
 exit()
 
